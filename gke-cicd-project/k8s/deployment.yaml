@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: us-central1-docker.pkg.dev/brilliant-dock-482112-t7/node-repo/gke-cicd-app:latest
+        image: us-central1-docker.pkg.dev/brilliant-dock-482112-t7/node-repo/node-app:latest
         ports:
         - containerPort: 3000
