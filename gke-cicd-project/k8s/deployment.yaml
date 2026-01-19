@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gke-cicd-app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gke-cicd-app
+  template:
+    metadata:
+      labels:
+        app: gke-cicd-app
+    spec:
+      containers:
+      - name: nodejs-app
+        image: us-central1-docker.pkg.dev/brilliant-dock-482112-t7/node-repo/gke-cicd-app:latest
+        ports:
+        - containerPort: 3000

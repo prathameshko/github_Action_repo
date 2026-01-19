@@ -1,0 +1,42 @@
+name: CI/CD to GKE
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  PROJECT_ID: brilliant-dock-482112-t7
+  REGION: us-central1
+  CLUSTER: gke-cicd-cluster
+  REPOSITORY: node-repo
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker $REGION-docker.pkg.dev
+
+    - name: Build Docker image
+      run: docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/node-app:latest .
+
+    - name: Push Docker image
+      run: docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/node-app:latest
+
+    - name: Get GKE credentials
+      run: gcloud container clusters get-credentials $CLUSTER --region $REGION
+
+    - name: Deploy to GKE
+      run: kubectl apply -f k8s/
